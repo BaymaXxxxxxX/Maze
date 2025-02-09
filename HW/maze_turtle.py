@@ -10,8 +10,7 @@ class Maze:
     def __init__(self, maze_file_name):
         """โหลดเขาวงกตจากไฟล์และกำหนดค่าเริ่มต้น"""
         self.maze_list = []
-        self.visited = set()  # ใช้สำหรับเก็บตำแหน่งที่เคยเดิน
-        maze_file = open(f'HW/{maze_file_name}','r')
+        maze_file = open(f'HW/{maze_file_name}', 'r')
         rows_in_maze = 0
         for line in maze_file:
             row_list = []
@@ -31,6 +30,7 @@ class Maze:
         self.t.shape('turtle')
         self.wn = turtle.Screen()
         self.wn.setworldcoordinates(-0.5, -self.rows_in_maze + 0.5, self.columns_in_maze - 0.5, 0.5)
+        self.wn.bgcolor("lightblue")
 
     def draw_maze(self):
         """วาดเขาวงกตบนหน้าจอด้วย turtle"""
@@ -40,9 +40,9 @@ class Maze:
             for x in range(len(self.maze_list[y])):
                 if self.maze_list[y][x] == OBSTACLE:
                     self.draw_square(x, y, 'orange')
-                if self.maze_list[y][x] == self.maze_list[self.end_row][self.end_col]:
+                elif self.maze_list[y][x] == 'E':
                     self.draw_square(x, y, 'green')
-        self.t.speed(0)
+        self.t.speed(1)
 
     def draw_square(self, x, y, color):
         """วาดกล่องสี่เหลี่ยมที่ตำแหน่ง (x, y) ด้วยสีที่กำหนด"""
@@ -63,7 +63,7 @@ class Maze:
         """ย้าย Turtle ไปยังตำแหน่ง (x, y) ทีละก้าว"""
         self.t.setheading(self.t.towards(x, -y))
         self.t.goto(x, -y)
-        time.sleep(0.01)
+        time.sleep(0.1)
 
     def update_position(self, row, col, val=None):
         """อัปเดตตำแหน่งของ Turtle และ mark จุดด้วยสีต่าง ๆ"""
@@ -81,6 +81,36 @@ class Maze:
         if color:
             self.t.dot(10, color)
 
-  
-my_maze = Maze('maze_1.txt')  # โหลดเขาวงกตจากไฟล์ maze1.txt
-my_maze.draw_maze()  # วาดเขาวงกตด้วย Turtle
+    def dfs(self, row, col):
+        """ค้นหาเส้นทางออกจากเขาวงกตโดยใช้ DFS"""
+        if row < 0 or row >= self.rows_in_maze or col < 0 or col >= self.columns_in_maze:
+            return False
+        if self.maze_list[row][col] in (OBSTACLE, TRIED, DEAD_END):
+            return False
+        if (row, col) == (self.end_row, self.end_col):
+            self.update_position(row, col, PART_OF_PATH)
+            print(">>>>> ยินดีด้วย! พบทางออกแล้ว! <<<<<")
+            return True
+
+        self.update_position(row, col, TRIED)
+        
+        # สำรวจใน 4 ทิศทาง: ขวา, ล่าง, ซ้าย, ขึ้น
+        for dr, dc in [(0, 1), (1, 0), (0, -1), (-1, 0)]:
+            if self.dfs(row + dr, col + dc):
+                self.update_position(row, col, PART_OF_PATH)
+                return True
+
+        self.update_position(row, col, DEAD_END)
+        return False
+
+def main():
+    my_maze = Maze('maze_1.txt')
+    my_maze.draw_maze()
+    found = my_maze.dfs(my_maze.start_row, my_maze.start_col)
+    if not found:
+        print("ไม่พบทางออกในเขาวงกตนี้!")
+    else:
+        print("การค้นหาเส้นทางเสร็จสมบูรณ์")
+
+if __name__ == '__main__':
+    main()
