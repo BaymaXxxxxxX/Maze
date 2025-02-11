@@ -48,7 +48,7 @@ class Maze:
         for y in range(self.rows_in_maze):  # วนลูปตามจำนวนแถว
             for x in range(len(self.maze_list[y])):  # วนลูปตามคอลัมน์ในแต่ละแถว
                 if self.maze_list[y][x] == OBSTACLE:  # หากเป็นสิ่งกีดขวาง
-                    self.draw_square(x, y, 'orange')  # วาดสี่เหลี่ยมสีส้ม
+                    self.draw_square(x, y, 'black')  # วาดสี่เหลี่ยมสีส้ม
                 elif self.maze_list[y][x] == 'E':  # หากเป็นจุดสิ้นสุด
                     self.draw_square(x, y, 'green')  # วาดสี่เหลี่ยมสีเขียว
         self.t.speed(0)  # ตั้งความเร็วของเต่าเป็นปกติ
@@ -57,7 +57,7 @@ class Maze:
         """วาดสี่เหลี่ยมที่ตำแหน่ง (x, y) ด้วยสีที่กำหนด"""
         self.t.up()  # ยกปากกา
         self.t.goto(x - 0.5, -y - 0.5)  # ย้ายไปที่มุมซ้ายบนของสี่เหลี่ยม
-        self.t.color(color)  # ตั้งค่าสีเส้นขอบ
+        self.t.color(color )  # ตั้งค่าสีเส้นขอบ
         self.t.fillcolor(color)  # ตั้งค่าสีภายในสี่เหลี่ยม
         self.t.setheading(90)  # ตั้งมุมมองของเต่าให้ชี้ขึ้น
         self.t.down()  # วางปากกา
@@ -81,7 +81,7 @@ class Maze:
         if val == PART_OF_PATH:  # หากเป็นเส้นทางที่ถูกต้อง
             color = 'green'
         elif val == TRIED:  # หากเป็นจุดที่กำลังสำรวจ
-            color = 'black'
+            color = 'gray'
         elif val == DEAD_END:  # หากเป็นทางตัน
             color = 'red'
         else:
